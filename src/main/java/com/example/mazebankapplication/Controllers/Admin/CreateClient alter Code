@@ -1,0 +1,85 @@
+Im neuen codeblock habe ich die hash passwort verschlüsselung mit salt untergebracht
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        create_client_btn.setOnAction(actionEvent -> createClient());
+        pAdress_box.selectedProperty().addListener((observableValue, oldVal, newVal) ->{
+            if (newVal) {
+                payeeAddress = createPayeeAddress();
+                OnCreatePayeeAddress();
+            }
+        } );
+        ch_acc_box.selectedProperty().addListener((observableValue, oldVal, newVal) -> {
+            if (newVal) {
+                createSavingsAccountFlag = true;
+            }
+        });
+        sv_acc_box.selectedProperty().addListener((observableValue, oldVal, newVal) -> {
+            if (newVal) {
+                createSavingsAccountFlag = true;
+            }
+        });
+    }
+
+        private void createClient(){
+        //CreateCheckingAcc
+            if (createCheckingAccountFlag){
+                createAccount("Checking");
+            }
+            if (createSavingsAccountFlag){
+                createAccount("Savings");
+            }
+            //Create Client
+            String fName = fName_fld.getText();
+            String lName = Name_fld.getText();
+            String password = password_fld.getText();
+            Model.getInstance().getDatabaseDriver().createClient(fName,lName,payeeAdddress,password, LocalDate.now());
+            error_lbl.setStyle("-fx-text-fill: blue; -fx-font-size: 1.3em; -fx-font-weight: bold");
+            error_lbl.setText("Client Created Succesfully!");
+            emptyFields();
+    }
+
+    private void OnCreatePayeeAddress() {
+        if (fName_fld.getText() != null & Name_fld.getText() != null) {
+            pAddress_lbl.setText(payeeAddress);
+
+        }
+    }
+
+        private void createAccount(String accountType) {
+                double balance = Double.parseDouble(ch_ammount_fld.getText());
+                // Generate Acc Number
+            String firstSection = "3201";
+            String lastSection = Integer.toString((new Random()).nextInt(9999) + 1000);
+            String accountNumber = firstSection + " " + lastSection;
+            // create the checking acc or savings acc
+            if (accountType.equals("Checking")) {
+                Model.getInstance().getDatabaseDriver().createCheckingAccount(payeeAddress, accountNumber, 10, balance);
+            }else {
+                Model.getInstance().getDatabaseDriver().createSavingsAccount(payeeAddress, accountNumber, 2000, balance);
+
+            }
+                }
+
+        private String createPayeeAddress(){
+            int id = Model.getInstance().getDatabaseDriver().getLastClientsId() +1;
+            char fchar = Character.toLowerCase(fName_fld.getText().charAt(0));
+            return "@"+fchar+Name_fld.getText()+id;
+        }
+
+    private  void emptyFields(){
+        fName_fld.setText("");
+        Name_fld.setText("");
+        password_fld.setText("");
+        pAddress_box.setSelected(false);
+        pAddress_lbl.setText("");
+        ch_acc_box.setSelected(false);
+        ch_ammount_fld.setText("");
+        sv_acc_box.setSelected(false);
+
+    }
+
+
+
+}

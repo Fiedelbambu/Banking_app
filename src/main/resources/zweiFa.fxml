@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Fxml/Styles/login.css"
+            xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.mazebankapplication.Views.zweifaController">
+   <VBox prefHeight="400.0" prefWidth="200.0" styleClass="login_logo_container" AnchorPane.bottomAnchor="0.0"
+         AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <FontAwesomeIconView fill="WHITE" glyphName="BANK" size="30"/>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Fiedl Bank"/>
+   </VBox>
+   <VBox layoutX="316.0" layoutY="47.0" prefHeight="350.0" prefWidth="350.0" styleClass="login_form_container"
+         AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2 Fa Authentifizierung"/>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="account_selector">
+         <TextField fx:id="codeOne_fld" alignment="TOP_CENTER" prefHeight="30.0" prefWidth="30.0"/>
+         <TextField fx:id="codeTwo_fld" alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="30.0"
+                    prefWidth="30.0"/>
+         <TextField fx:id="codeThree_fld" alignment="TOP_CENTER" layoutX="29.0" layoutY="10.0" prefHeight="30.0"
+                    prefWidth="30.0"/>
+         <TextField fx:id="codeFour_fld" alignment="TOP_CENTER" layoutX="48.0" layoutY="10.0" prefHeight="30.0"
+                    prefWidth="30.0"/>
+         <TextField fx:id="codeFive_fld" alignment="TOP_CENTER" layoutX="67.0" layoutY="10.0" prefHeight="30.0"
+                    prefWidth="30.0"/>
+         <TextField fx:id="codeSix_fld" alignment="CENTER" layoutX="86.0" layoutY="10.0" prefHeight="30.0"
+                    prefWidth="30.0"/>
+      </HBox>
+   </VBox>
+</AnchorPane>

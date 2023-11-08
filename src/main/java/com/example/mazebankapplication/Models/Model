@@ -1,0 +1,182 @@
+package com.example.mazebankapplication.Models;
+
+import com.example.mazebankapplication.Views.AccountType;
+import com.example.mazebankapplication.Views.ViewFactory;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+
+public class Model extends Node {
+    private static Model model;
+    private final ViewFactory viewFactory;
+    private final DatabaseDriver databaseDriver;
+
+    //Client Database
+    private final Client client;
+    private boolean clientLoginSuccesFlag;
+    //Admin Database
+    private boolean adminLoginSuccesFlag;
+    private final ObservableList<Client> clients;
+
+
+
+    private Model() {
+
+        this.viewFactory = new ViewFactory();
+        this.databaseDriver = new DatabaseDriver();
+        //Client Data Section
+        this.clientLoginSuccesFlag = false;
+        this.client = new Client("", "", "", null, null, null);
+        //Admin Data Section
+        this.adminLoginSuccesFlag = false;
+        this.clients = FXCollections.observableArrayList();
+    }
+
+    public static synchronized Model getInstance() {
+        if (model == null) {
+            model = new Model();
+        }
+        return model;
+    }
+
+    public ViewFactory getViewFactory() {
+        return viewFactory;
+    }
+
+    public DatabaseDriver getDatabaseDriver() {
+        return databaseDriver;
+    }
+
+
+    /*
+    Client method Section
+     */
+
+    public boolean getClientLoginSuccessFlag() {
+        return this.clientLoginSuccesFlag;
+    }
+
+    public void setClientLoginSuccesFlag(boolean flag) {
+        this.clientLoginSuccesFlag = flag;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void evaluateClientCred(String pAdress, String password) {
+        CheckingAccount checkingAccount;
+        SavingsAccounts savingsAccounts;
+        ResultSet resultSet = databaseDriver.getClientData(pAdress, password);
+
+        try {
+            if (resultSet != null && resultSet.isBeforeFirst()) {
+                if (resultSet.next()) { // Move to the first row (if available)
+                    this.client.firstNameProperty().set(resultSet.getString("FirstName"));
+                    this.client.lastNameProperty().set(resultSet.getString("LastName"));
+                    this.client.PayeeAddress().set(resultSet.getString("PayeeAddress"));
+                    String[] dateParts = resultSet.getString("Date").split("-");
+                    LocalDate date = LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+                    this.client.dateProperty().set(date);
+                    checkingAccount = getCheckingAccount(pAdress);
+                    savingsAccounts = getSavingsAccount(pAddress);
+                    this.client.CheckingAccount().set(checkingAccount);
+                    this.client.SavingsAccount().set(savingsAccounts);
+                    this.clientLoginSuccesFlag = true;
+                }
+            } else {
+
+                this.clientLoginSuccesFlag = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+    Admin section
+     */
+
+    public boolean getAdminLoginSuccessFlag() { return this.adminLoginSuccesFlag;}
+
+    public void setAdminLoginSuccesFlag(boolean adminLoginSuccesFlag) {
+        this.adminLoginSuccesFlag = adminLoginSuccesFlag;
+    }
+
+    public void evaluateAdminCred(String username, String password){
+        ResultSet resultSet = databaseDriver.getAdminDate(username, password);
+        try {
+            if (resultSet.isBeforeFirst()){
+                this.adminLoginSuccesFlag = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public ObservableList<Client> getClients() {
+
+        return clients;
+    }
+    public void setClients() {
+        CheckingAccount checkingAccount;
+        SavingsAccounts savingsAccounts;
+        ResultSet resultSet = databaseDriver.getAllClientsData();
+        try {
+            while (resultSet.next()){
+                String fName = resultSet.getString("FirstName");
+                String lName = resultSet.getString("LastName");
+                String pAddress = resultSet.getString("PayeeAddress");
+                String[] dateParts = resultSet.getString("Date").split("-");
+                LocalDate date = LocalDate.of(Integer.parseInt(dateParts[0] ), Integer.parseInt(dateParts[1] ), Integer.parseInt(dateParts[2] ) );
+                checkingAccount = getCheckingAccount(pAddress);
+                savingsAccounts = getSavingsAccount(pAddress);
+                clients.add(new Client(fName,lName,pAddress,checkingAccount,savingsAccounts,date));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    /*
+    Utility Method Section
+
+     */
+
+    public CheckingAccount getCheckingAccount(String pAddress) {
+        CheckingAccount account = null;
+        ResultSet rs = databaseDriver.getCheckingAccountData(pAddress);
+        try {
+            String num = rs.getString("AccountNumber");
+            int tLimit = (int) rs.getDouble("TransactionLimit");
+            double balance = rs.getDouble("Balance");
+            account = new CheckingAccount(pAddress,num,balance,tLimit);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    return account;
+    }
+
+    public SavingsAccounts getSavingsAccount(String pAddress) {
+        SavingsAccounts account = null;
+        ResultSet rs = databaseDriver.getCheckingAccountData(pAddress);
+        try {
+            String num = rs.getString("AccountNumber");
+            double wLimit =  rs.getDouble("WithdrawalLimit");
+            double balance = rs.getDouble("Balance");
+            account = new SavingsAccounts(pAddress,num,balance,wLimit);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return account;
+    }
+}

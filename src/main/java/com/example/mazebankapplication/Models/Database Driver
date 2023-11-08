@@ -1,0 +1,185 @@
+Stellen Sie sicher, dass Sie resultSet.next() aufgerufen haben,
+bevor Sie auf Daten aus dem Ergebnissatz zugreifen.
+Die Stapelverfolgung enthält Informationen über die beteiligten Klassen und Methoden, die Ihnen helfen können, den genauen Ort des Problems in Ihrem Code zu ermitteln.
+
+
+
+public ResultSet getAdminDate(String username, String password) {
+        Statement statement;
+        ResultSet resultSet = null;
+        try {
+            statement = this.conn.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM Admins WHERE Username = '" + username + "' AND Password = '" + password + "';");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    return resultSet;
+    }
+//////////////////////////////////////Neuer Code/////////////////////////////////////////////////////////////////////////
+public ResultSet getAdminData(String username, String password) {
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+
+    try {
+        String query = "SELECT * FROM Admins WHERE Username = ? AND Password = ?";
+        preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, username);
+        preparedStatement.setString(2, password);
+        resultSet = preparedStatement.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return resultSet;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////Alter Code //////////////////////////////////////////////////////////////////////////////////
+//        public int getLastClientsId() {
+//            Statement statement;
+//            ResultSet rs;
+//            int id = 0;
+//            try {
+//                statement = this.conn.createStatement();
+//                rs = statement.executeQuery("SELECT  * FROM  sqlite_sequence WHERE  name='Clients';");
+//            //    id = rs.getInt("seq");
+//                id = rs.getInt("seq");
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            return id;
+//        }
+////////////////////////Neue Code //////////////////////////////////////////////////////////////////////////////////////
+    public int getLastClientsId() {
+        Statement statement;
+        ResultSet rs;
+        int id = 0;
+        try {
+            statement = this.conn.createStatement();
+            rs = statement.executeQuery("SELECT * FROM sqlite_sequence WHERE name='Clients';");
+            if (rs.next()) { // Bewegen Sie den ResultSet-Zeiger zur ersten Zeile
+                id = rs.getInt("seq"); // Dann können Sie auf die "seq"-Spalte zugreifen
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    //////////////////////////////////Alter Code ///////////////////////////////////////////////////////////////////////
+        public void createCheckingAccount(String owner, String number, double tLimit, double balance) {
+            Statement statement;
+            try {
+                statement = this.conn.createStatement();
+                statement.executeUpdate("INSERT INTO " +
+                        "CheckingAccounts (Owner, AccountNumber, TransactionLimit, Balance)" +
+                        " VALUES ('"+owner+"','"+number+"',"+tLimit+", "+balance+")");
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+///////////////////////////////////////Neue Code ///////////////////////////////////////////////////////////////////////
+
+public void createCheckingAccount(String owner, String number, double tLimit, double balance) {
+    try {
+        String sql = "INSERT INTO CheckingAccounts (Owner, AccountNumber, TransactionLimit, Balance) VALUES (?, ?, ?, ?)";
+        PreparedStatement preparedStatement = this.conn.prepareStatement(sql);
+        preparedStatement.setString(1, owner);
+        preparedStatement.setString(2, number);
+        preparedStatement.setDouble(3, tLimit);
+        preparedStatement.setDouble(4, balance);
+        preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////Aler Code ///////////////////////////////////////////////////////////////////////////////////
+ public ResultSet getCheckingAccountData(String pAddress) {
+        {
+            Statement statement;
+            ResultSet rs = null;
+            try {
+                statement = this.conn.createStatement();
+                rs = statement.executeQuery("SELECT * FROM  CheckingAccounts WHERE Owner = '" + pAddress + "';");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return rs;
+        }
+    }
+////////////////////////////////////Neue Code ///////////////////////////////////////////////////////////////////////////
+public String createSavingsAccount(String owner, String number, double wLimit, double balance) {
+    String generatedAccountNumber = null;
+
+    try {
+        String query = "INSERT INTO SavingsAccounts (Owner, AccountNumber, WithdrawalLimit, Balance) VALUES (?, ?, ?, ?)";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, owner);
+        preparedStatement.setString(2, number);
+        preparedStatement.setDouble(3, wLimit);
+        preparedStatement.setDouble(4, balance);
+
+        int rowsAffected = preparedStatement.executeUpdate();
+
+        if (rowsAffected == 1) {
+            generatedAccountNumber = number; // Set the generated account number
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return generatedAccountNumber; // Return the generated account number
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public ResultSet getCheckingAccountData(String owner) {
+    PreparedStatement preparedStatement = null;
+    ResultSet rs = null;
+
+    try {
+        String sql = "SELECT * FROM CheckingAccounts WHERE Owner = ?";
+        preparedStatement = this.conn.prepareStatement(sql);
+        preparedStatement.setString(1, owner);
+        rs = preparedStatement.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return rs;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////Alter Code ///////////////////////////////////////////////////////////////////
+ public ResultSet getSavingsAccountData(String pAddress){{
+        Statement statement;
+        ResultSet rs = null;
+        try {
+            statement = this.conn.createStatement();
+            rs = statement.executeQuery("SELECT * FROM  SavingsAccounts WHERE Owner = '"+pAddress+"';");
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return rs;
+    }
+ ////////////////////////////////////Neuer Code///////////////////////////////////////////////////////////////////////////
+public ResultSet getSavingsAccountData(String pAddress) {
+    PreparedStatement preparedStatement;
+    ResultSet rs = null;
+
+    try {
+        String query = "SELECT * FROM SavingsAccounts WHERE Owner = ?";
+        preparedStatement = this.conn.prepareStatement(query);
+        preparedStatement.setString(1, pAddress);
+
+        rs = preparedStatement.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return rs;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

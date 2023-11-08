@@ -1,0 +1,13 @@
+
+
+
+
+
+////////////////////////// Aktuelles Datum erhalten/////////////////////////////////////////////////////////////////////
+
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.util.Date date = new java.util.Date();
+        String formattedDate = dateFormat.format(date);
+        login_date.setText("Login-Datum: " + formattedDate);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

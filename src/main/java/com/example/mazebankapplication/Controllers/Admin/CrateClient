@@ -1,0 +1,66 @@
+Einige änderungen vorgenommen da der Origignale Code nicht sauber geschrieben ist und es gefahr gibt für eine SQL Injection :::
+
+
+//////////////////////////Original Code////////////////////////////////////////////////////////////////////////////////////7
+
+
+ public void createClient(String fName, String lName, String pAddress, String password, LocalDate date){
+        Statement statement;
+        try {
+            statement = this.conn.createStatement();
+            statement.executeUpdate("INSERT  INTO "+
+                        "Clients(FirstName, LastName, PayeeAddress, Password,Date)"+
+                        "VALUES ('"+fName+"','"+lName+"','"+pAddress+"','"+date.toString()+"');");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ public void createClient(String fName, String lName, String pAddress, String password, LocalDate date) {
+         try {
+             String query = "INSERT INTO Clients(FirstName, LastName, PayeeAddress, Password, Date) VALUES (?, ?, ?, ?, ?)";
+             PreparedStatement preparedStatement = conn.prepareStatement(query);
+             preparedStatement.setString(1, fName);
+             preparedStatement.setString(2, lName);
+             preparedStatement.setString(3, pAddress);
+             preparedStatement.setString(4, password);
+             preparedStatement.setString(5, date.toString());
+
+             preparedStatement.executeUpdate();
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+     }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ public void createCheckingAccount(String owner, String number, double tLimit, double balance) {
+        Statement statement;
+     try {
+         statement = this.conn.createStatement();
+         statement.executeUpdate("INSERT INTO " +
+                 "CheckingAccounts (Owner, AccountNumber, TransactionLimit, Balance)" +
+                 " VALUES ('"+owner+"','"+number+"',"+tLimit+", "+balance+")");
+     }catch (SQLException e){
+         e.printStackTrace();
+     }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+public void createCheckingAccount(String owner, String number, double tLimit, double balance) {
+    try {
+        String query = "INSERT INTO CheckingAccounts (Owner, AccountNumber, TransactionLimit, Balance) VALUES (?, ?, ?, ?)";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setString(1, owner);
+        preparedStatement.setString(2, number);
+        preparedStatement.setDouble(3, tLimit);
+        preparedStatement.setDouble(4, balance);
+
+        preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+
+
